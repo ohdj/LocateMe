@@ -1,0 +1,17 @@
+name: LocateMe
+version: '${project.version}'
+main: org.ohdj.locateme.LocateMe
+api-version: '1.20'
+authors: [ ohdj ]
+description: This is my first Minecraft Spigot Plugin.
+
+commands:
+  here:
+    description: Share your location and dimension
+    usage: /here
+    permission: hereplugin.here
+
+permissions:
+  #自定义权限名
+  hereplugin.here:
+    default: true
