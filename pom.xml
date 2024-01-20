@@ -32,6 +32,22 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.jetbrains:annotations</artifact>
+                            <excludes>
+                                <exclude>org/intellij/lang/annotations/**</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
