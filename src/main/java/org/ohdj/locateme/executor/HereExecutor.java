@@ -11,6 +11,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.MessageFormat;
+
 public class HereExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -31,54 +33,55 @@ public class HereExecutor implements CommandExecutor {
 
         // 获取玩家所在的维度
         World.Environment dimension = player.getWorld().getEnvironment();
-        String dimensionInfo;
-        ChatColor dimensionColor;
+        String dimensionWithColor;
 
         // 根据维度设置对应的颜色和信息
         switch (dimension) {
             case NORMAL:
-                dimensionColor = ChatColor.GOLD; // 主世界橙色
-                dimensionInfo = "主世界";
+                dimensionWithColor = ChatColor.GOLD + "主世界";
                 break;
             case NETHER:
-                dimensionColor = ChatColor.DARK_RED; // 地狱深红色
-                dimensionInfo = "地狱";
+                dimensionWithColor = ChatColor.DARK_RED + "地狱";
                 break;
             case THE_END:
-                dimensionColor = ChatColor.GRAY; // 末地灰色
-                dimensionInfo = "末地";
+                dimensionWithColor = ChatColor.GRAY + "末地";
                 break;
             default:
-                dimensionColor = ChatColor.RESET; // 未知白色
-                dimensionInfo = "未知";
+                dimensionWithColor = ChatColor.RESET + "未知";
                 break;
         }
 
-        // 生成广播消息
-        String messageFormat = ChatColor.AQUA + "[Here] " + ChatColor.YELLOW + "%s" + ChatColor.RESET + " 在 " + dimensionColor + "%s" + ChatColor.RESET + " 的 [ " + ChatColor.RED + "%.1f" + ChatColor.RESET + " , " + ChatColor.GREEN + "%.1f" + ChatColor.RESET + " , " + ChatColor.BLUE + "%.1f" + ChatColor.RESET;
-
+        String messageTemp = "&b[Here] &e{0}&r 在 {1} &r的 [ &c{2}&r , &a{3}&r , &9{4}&r ]";
         // 使用玩家的名字、维度信息和位置信息格式化消息
-        String message = String.format(messageFormat, player.getName(), dimensionInfo, x, y, z);
+        String messageFormat = MessageFormat.format(messageTemp,
+                player.getName(),
+                dimensionWithColor,
+                String.format("%.1f", x),
+                String.format("%.1f", y),
+                String.format("%.1f", z));
+        String message = ChatColor.translateAlternateColorCodes('&', messageFormat);
 
         // 如果玩家在主世界或地狱，添加一个转换到另一个维度的坐标
         if (dimension == World.Environment.NORMAL || dimension == World.Environment.NETHER) {
-            String targetDimensionColor;
+            String targetDimensionWithColor;
             double factor;
 
             if (dimension == World.Environment.NORMAL) {
-                targetDimensionColor = ChatColor.DARK_RED + "地狱";
+                targetDimensionWithColor = ChatColor.DARK_RED + "地狱";
                 factor = 1 / 8.0;
             } else {
-                targetDimensionColor = ChatColor.GOLD + "主世界";
+                targetDimensionWithColor = ChatColor.GOLD + "主世界";
                 factor = 8.0;
             }
 
-            String transitionFormat = " ] => " + targetDimensionColor + ChatColor.RESET + " [ " + ChatColor.RED + "%.1f" + ChatColor.RESET + " , " + ChatColor.BLUE + "%.1f" + ChatColor.RESET;
-            message += String.format(transitionFormat, x * factor, z * factor);
+            String transitionTemp = " => {0}&r [ &c{1}&r , &9{2}&r ]";
+            String transitionFormat = MessageFormat.format(transitionTemp,
+                    targetDimensionWithColor,
+                    String.format("%.1f", x * factor),
+                    String.format("%.1f", z * factor)
+            );
+            message += ChatColor.translateAlternateColorCodes('&', transitionFormat);
         }
-
-        // 添加消息的结束部分
-        message += " ]";
 
         // 广播消息
         Bukkit.broadcastMessage(message);
