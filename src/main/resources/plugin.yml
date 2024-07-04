@@ -8,10 +8,16 @@ description: This is my first Minecraft Spigot Plugin.
 commands:
   here:
     description: Share your location and dimension
-    usage: /here
-    permission: hereplugin.here
+    usage: /<command>
+    permission: plugin.here
+  where:
+    description: Show other location and dimension
+    usage: /<command>
+    permission: plugin.where
 
 permissions:
   #自定义权限名
-  hereplugin.here:
+  plugin.here:
+    default: true
+  plugin.where:
     default: true
