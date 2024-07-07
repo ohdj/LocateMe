@@ -13,7 +13,7 @@ public final class LocateMe extends JavaPlugin {
         getCommand("here").setExecutor(new HereExecutor());
         getCommand("where").setExecutor(new WhereExecutor());
         // 自定义事件：当玩家试图在自定义物品栏中拿取特殊物品时，会操作失败
-        Bukkit.getPluginManager().registerEvents(new OnPlayerListInventoryClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new OnPlayerListInventoryClickListener(this), this);
         getLogger().info("LocateMe已启用~");
     }
 

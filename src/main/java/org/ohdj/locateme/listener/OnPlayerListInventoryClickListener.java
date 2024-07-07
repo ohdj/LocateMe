@@ -1,31 +1,43 @@
 package org.ohdj.locateme.listener;
 
-import org.bukkit.Bukkit;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.ohdj.locateme.holder.OnlinePlayersHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import static org.bukkit.Bukkit.getLogger;
+import static org.bukkit.Bukkit.getScheduler;
 
 public class OnPlayerListInventoryClickListener implements Listener {
+    JavaPlugin plugin;
+
+    public OnPlayerListInventoryClickListener(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void OnPlayerListInventoryClick(InventoryClickEvent event) {
-        // 当前的物品栏
-        Inventory currentInv = event.getInventory();
-        // 获取点击的玩家
-        Player player = Bukkit.getPlayerExact(event.getWhoClicked().getName());
+        if (event.getView().getTitle().equals("Online Players")) {
+            event.setCancelled(true);
 
-        // 判断是不是远程的自定义箱子
-        Inventory remoteInv = OnlinePlayersHolder.getInventory(player);
-        if (remoteInv == null) {
-            // 为null，肯定不是
-            return;
-        } else {
-            // 非空，再判断
-            if (remoteInv == currentInv) {
-                // 两者是同一对象
-                event.setCancelled(true);
+            ItemStack clickedItem = event.getCurrentItem();
+            if (clickedItem != null && clickedItem.getType() == Material.PLAYER_HEAD) {
+                SkullMeta meta = (SkullMeta) clickedItem.getItemMeta();
+                if (meta != null && meta.hasOwner()) {
+                    Player clickedPlayer = Bukkit.getPlayer(meta.getOwningPlayer().getUniqueId());
+                    if (clickedPlayer != null) {
+                        Location loc = clickedPlayer.getLocation();
+                        String message = ChatColor.GOLD + clickedPlayer.getName() + "'s location: "
+                                + "X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ();
+                        event.getWhoClicked().sendMessage(message);
+                        clickedPlayer.playSound(clickedPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                        getScheduler().runTask(plugin, () -> event.getWhoClicked().closeInventory());
+                    }
+                }
             }
         }
     }
