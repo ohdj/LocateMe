@@ -34,7 +34,7 @@ public class OnPlayerListInventoryClickListener implements Listener {
                         String message = ChatColor.GOLD + clickedPlayer.getName() + "'s location: "
                                 + "X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ();
                         event.getWhoClicked().sendMessage(message);
-                        clickedPlayer.playSound(clickedPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                        ((Player) event.getWhoClicked()).playSound(clickedPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
                         getScheduler().runTask(plugin, () -> event.getWhoClicked().closeInventory());
                     }
                 }
