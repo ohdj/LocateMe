@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +24,10 @@ public class OnPlayerListInventoryClickListener implements Listener {
     @EventHandler
     public void OnPlayerListInventoryClick(InventoryClickEvent event) {
         if (event.getView().getTitle().equals("Online Players")) {
-            event.setCancelled(true);
+            // 如果点击的是玩家自己的物品栏，则不处理
+            if (event.getClickedInventory().getType() == InventoryType.CHEST) {
+                event.setCancelled(true);
+            }
 
             ItemStack clickedItem = event.getCurrentItem();
             if (clickedItem != null && clickedItem.getType() == Material.PLAYER_HEAD) {
